@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "base64EncodeCompressConvert",
+  "version": "1.0.0",
+  "description": "Adds right-click menu option on images to encode, compress, and convert.",
+  "permissions": [
+    "contextMenus",
+    "tabs",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_title": "base64EncodeCompressConvert"
+  },
+  "icons": {
+    "32": "icon32.png"
+  }
+}

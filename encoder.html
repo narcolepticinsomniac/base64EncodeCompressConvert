@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>base64EncodeCompressConvert</title>
+    <link rel="icon" type="image/x-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAPFBMVEUAAAAAAAAAAAAkJCQxMTH///+Tk5NGRkaenp7r6+vHx8fY2Njz8/NYWFiFhYXh4eFra2t2dna6urqkpKRYtOs9AAAAAnRSTlMCtxGgiZUAAAC7SURBVHgBrI9FAoVQCEUVX3fsf68fDGxH/06IQw7DCC8aPxhR+NAf4CRQ5JC9QCFRCh2N1lygxZwjx0sZLmONRJET0aYzFMQieZkbGdptUUGniloqw2Woz01DkNKCwojhJDcZj41n2CQrYeMZri92NLYVgHSAkV+kVqWUo2IjZliWxqXVyE3x3qnOkHdSk03OuUzVTi9QSRY9fzzo+Eun6PgKqWRCPsKsmn3+DS2ymambhvAAvIkab3YAAGj/Czr+mBsfAAAAAElFTkSuQmCC">
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      html {
+        min-height: 100vh;
+      }
+      body {
+        background-color: hsl(204, 63%, 3%);
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAQAAAD8IX00AAAAE0lEQVR4AWNgYNgsvRlCgCgwBAA6YQXPi9F1OAAAAABJRU5ErkJggg==);
+        display: flex;
+        flex-direction: column;
+        font-family: Arial, Helvetica, sans-serif;
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        color: hsl(0, 0%, 75%);
+        overflow: hidden;
+      }
+      a,
+      button {
+        color: currentColor;
+        transition: color .2s;
+      }
+      a:hover,
+      button:hover {
+        color: hsl(0, 0%, 100%);
+      }
+      header {
+        z-index: 2;
+        display: flex;
+        flex-shrink: 0;
+        padding: 8px 16px;
+        position: relative;
+        background: hsla(200, 10%, 20%, .5);
+        align-items: center;
+        border-bottom: 1px solid hsl(196, 30%, 17%);
+      }
+      input,
+      .item div,
+      .dnd {
+        color: hsl(0, 0%, 86%);
+      }
+      .controls {
+        position: relative;
+        margin: 0 auto;
+        font-size: 13px;
+      }
+      #header-left,
+      #header-middle,
+      #header-right {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 0;
+        flex: 1 1 0;
+      }
+      #header-middle {
+        justify-content: space-evenly;
+      }
+      #max-dim {
+        margin: auto;
+      }
+      .slider-wrap {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      #compression-slider {
+        width: 220px;
+        accent-color: hsl(190, 50%, 56%);
+        cursor: pointer;
+      }
+      .copy-css-button {
+        align-items: self-end;
+      }
+      ::selection {
+        background-color: hsl(190, 30%, 17%);
+        color: hsl(0, 0%, 100%);
+      }
+      select {
+        outline: 0;
+        font: 13px Arial;
+        padding: 2px 6px;
+        border-radius: 2px;
+        color: currentColor;
+        background-color: hsl(0, 0%, 9%);
+        transition: color .2s, border-color .2s;
+        border: 1px solid hsl(196, 42%, 30%);
+      }
+      textarea {
+        width: calc(100% - 8px);
+        max-width: calc(100% - 8px);
+        margin: 2px 0px;
+        field-sizing: content;
+        max-height: 120px;
+        font-family: Courier;
+        font-size: 13px;
+        background: hsl(200, 14%, 10%);
+        outline: 0;
+        border-radius: 4px;
+        color: currentColor;
+        transition: color .2s, border-color .2s;
+        border: 1px solid hsl(196, 42%, 20%);
+      }
+      select:hover,
+      select:focus,
+      textarea:focus {
+        color: hsl(0, 0%, 100%);
+        border-color: hsl(180, 50%, 56%);
+      }
+      #results {
+        position: relative;
+        padding: 20px 50px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow-y: auto;
+        scrollbar-gutter: stable;
+      }
+      #file-picker {
+        display: none;
+      }
+      button {
+        background: none;
+        border: 0;
+        display: inline-flex;
+        cursor: pointer;
+        color: currentColor;
+      }
+      body.dragging::after {
+        content: 'Drop files anywhere to encode';
+        position: fixed;
+        inset: 12px;
+        background: hsla(224, 50%, 56%, 0.18);
+        border: 2px dashed hsl(224, 50%, 56%);
+        border-radius: 8px;
+        color: hsl(0, 0%, 96%);
+        font-size: 20px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 9999;
+      }
+      .item {
+        margin: 10px auto;
+        max-width: 800px;
+        width: calc(100% - 40px);
+        box-sizing: border-box;
+        padding: 14px 16px;
+        background: hsla(200, 30%, 10%, .5);
+        border: 1px solid hsl(196, 42%, 20%);
+        border-radius: 8px;
+        text-align: left;
+      }
+      .item-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .item-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        font-size: 13px;
+        font-weight: 500;
+        color: hsl(0, 0%, 86%);
+      }
+      .item-title span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .item-title img {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+        border-radius: 2px;
+        background: hsl(0, 0%, 14%);
+        border: 1px solid hsl(224, 29%, 22%);
+        flex-shrink: 0;
+      }
+      .item-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+      .item-actions button {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        height: 26px;
+        padding: 0 8px;
+        cursor: pointer;
+      }
+      .copy-wrap {
+        position: relative;
+        display: inline-flex;
+      }
+      .copy-tooltip {
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%) translateY(4px);
+        background: hsl(145, 60%, 22%);
+        color: hsl(145, 75%, 85%);
+        border: 1px solid hsl(145, 60%, 45%);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 7px;
+        border-radius: 4px;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        box-shadow: 0 2px 6px hsla(0, 0%, 0%, 0.45);
+        transition: opacity 0.15s ease, transform 0.15s ease;
+        z-index: 10;
+      }
+      .copy-tooltip.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .remove {
+        font-size: 20px;
+        margin-top: -2px;
+      }
+    </style>
+  </head>
+  <body>
+    <header id="header">
+      <input id="file-picker" type="file" multiple />
+      <div id="header-left">
+        <a href="https://github.com/narcolepticinsomniac/base64-encoder" target="_blank"><svg data-component="Octicon" aria-hidden="true" focusable="false" class="octicon octicon-mark-github" viewBox="0 0 24 24" width="32" height="32" fill="currentColor" display="inline-block" overflow="visible" style="vertical-align: text-bottom;"><path d="M10.226 17.284c-2.965-.36-5.054-2.493-5.054-5.256 0-1.123.404-2.336 1.078-3.144-.292-.741-.247-2.314.09-2.965.898-.112 2.111.36 2.83 1.01.853-.269 1.752-.404 2.853-.404 1.1 0 1.999.135 2.807.382.696-.629 1.932-1.1 2.83-.988.315.606.36 2.179.067 2.942.72.854 1.101 2 1.101 3.167 0 2.763-2.089 4.852-5.098 5.234.763.494 1.28 1.572 1.28 2.807v2.336c0 .674.561 1.056 1.235.786 4.066-1.55 7.255-5.615 7.255-10.646C23.5 6.188 18.334 1 11.978 1 5.62 1 .5 6.188.5 12.545c0 4.986 3.167 9.12 7.435 10.669.606.225 1.19-.18 1.19-.786V20.63a2.9 2.9 0 0 1-1.078.224c-1.483 0-2.359-.808-2.987-2.313-.247-.607-.517-.966-1.034-1.033-.27-.023-.359-.135-.359-.27 0-.27.45-.471.898-.471.652 0 1.213.404 1.797 1.235.45.651.921.943 1.483.943.561 0 .92-.202 1.437-.719.382-.381.674-.718.944-.943"></path></svg></a>
+      </div>
+      <div id="header-middle" class="controls">
+        <button id="choose-files" title="Choose files"><svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M0 2.75C0 1.784.784 1 1.75 1H5a1.75 1.75 0 0 1 1.4.7l.9 1.2a.25.25 0 0 0 .2.1h6.75c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 15H5.375a.75.75 0 0 1 0-1.5h8.875a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25H7.5a1.75 1.75 0 0 1-1.4-.7l-.9-1.2a.25.25 0 0 0-.2-.1H1.75a.25.25 0 0 0-.25.25v3a.75.75 0 0 1-1.5 0v-3Z"></path><path d="M1.5 12.237a2.25 2.25 0 0 1 2.262-2.249L4 9.989v1.938c0 .218.26.331.42.183l2.883-2.677a.25.25 0 0 0 0-.366L4.42 6.39a.25.25 0 0 0-.42.183v1.916l-.229-.001A3.75 3.75 0 0 0 0 12.237v1.013a.75.75 0 0 0 1.5 0v-1.013Z"></path></svg></button>
+        <div class="slider-wrap">
+          <label for="compression-slider">
+            Compression: <strong id="compression-label">50% (Lossy WebP)</strong>
+          </label>
+          <input id="compression-slider" type="range" min="0" max="100" value="50" autocomplete="off" />
+        </div>
+        <button id="clear-all" title="Clear all and reset"><svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-width="2" d="M10 4a2 2 0 1 1 4 0v6h6v4H4v-4h6V4ZM4 14h16v8H4v-8Zm12 8v-5.635M8 22v-5.635M12 22v-5.635"></path></svg></button>
+      </div>
+      <div id="header-right">
+        <label for="max-dim-select" id="max-dim">
+          Max Dimension:
+          <select id="max-dim-select" autocomplete="off">
+            <option value="2048" selected>2048px (Safe Default)</option>
+            <option value="1024">1024px (Web / UI)</option>
+            <option value="512">512px (Small Asset)</option>
+            <option value="128">128px (Icon)</option>
+            <option value="0">Original (No Resize)</option>
+          </select>
+        </label>
+        <div id="drag-n-drop-icon" title="Drag & drop images anywhere on this page&#10;Paste images or image URLs directly when page has focus">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="hsl(0, 0%, 75%)"><path d="M19.5 12c-2.483 0-4.5 2.015-4.5 4.5s2.017 4.5 4.5 4.5 4.5-2.015 4.5-4.5-2.017-4.5-4.5-4.5zm2.5 5h-2v2h-1v-2h-2v-1h2v-2h1v2h2v1zm-18 0l4-5.96 2.48 1.96 2.52-4 1.853 2.964c-1.271 1.303-1.977 3.089-1.827 5.036h-9.026zm10.82 4h-14.82v-18h22v7.501c-.623-.261-1.297-.422-2-.476v-5.025h-18v14h11.502c.312.749.765 1.424 1.318 2zm-9.32-11c-.828 0-1.5-.671-1.5-1.5 0-.828.672-1.5 1.5-1.5s1.5.672 1.5 1.5c0 .829-.672 1.5-1.5 1.5z"/></svg>
+        </div>
+      </div>
+    </header>
+    <div id="results"></div>
+    <script src="encoder.js"></script>
+  </body>
+</html>
