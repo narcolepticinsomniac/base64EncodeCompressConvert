@@ -3,6 +3,7 @@
   "name": "base64EncodeCompressConvert",
   "version": "1.0.0",
   "description": "Adds right-click menu option on images to encode, compress, and convert.",
+  "homepage_url": "https://github.com/narcolepticinsomniac/base64EncodeCompressConvert",
   "permissions": [
     "contextMenus",
     "tabs",
